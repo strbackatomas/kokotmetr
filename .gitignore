@@ -1,0 +1,11 @@
+DataWedge/
+out/
+build/
+dist/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.tmp
+# Ignore the build output directory and log files.
