@@ -1,3 +1,4 @@
+# Ignore build output and temporary files
 DataWedge/
 out/
 build/
@@ -8,4 +9,3 @@ dist/
 *.ear
 *.log
 *.tmp
-# Ignore the build output directory and log files.

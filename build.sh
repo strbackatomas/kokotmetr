@@ -16,6 +16,11 @@ echo "Packaging..."
 $JAVA6/jar cfm "$JAR" <(echo -e "Manifest-Version: 1.0\nMain-Class: Kokotmetr\n") \
     -C "$OUT" Kokotmetr.class \
     -C "$OUT" 'Kokotmetr$1.class' \
-    -C "$OUT" 'Kokotmetr$ProgressBar.class'
+    -C "$OUT" 'Kokotmetr$2.class' \
+    -C "$OUT" 'Kokotmetr$3.class' \
+    -C "$OUT" 'Kokotmetr$4.class' \
+    -C "$OUT" 'Kokotmetr$ProgressBar.class' \
+    -C "$ROOT/assets" kokotmetr_linka.jpg \
+    -C "$ROOT/assets" kokotmetr_radius.jpg
 
 echo "Done: $JAR"
