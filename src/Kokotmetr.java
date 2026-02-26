@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Random;
 import javax.swing.*;
 
 public class Kokotmetr extends JFrame implements KeyListener {
@@ -15,7 +16,7 @@ public class Kokotmetr extends JFrame implements KeyListener {
 
         static final int MODE_LINKA  = 0;
         static final int MODE_RADIUS = 1;
-        private int mode = MODE_LINKA;
+        private int mode = MODE_RADIUS;
 
         void setMode(int m) { mode = m; repaint(); }
         int getMode() { return mode; }
@@ -116,6 +117,13 @@ public class Kokotmetr extends JFrame implements KeyListener {
                 ensureImageLoaded();
                 paintLinka(og, w, h);
             }
+
+            Font vf = new Font("Dialog", Font.PLAIN, 10);
+            og.setFont(vf);
+            FontMetrics fm = og.getFontMetrics(vf);
+            String vs = "v" + AppConfig.VERSION;
+            og.setColor(new Color(100, 100, 100));
+            og.drawString(vs, w - fm.stringWidth(vs) - 4, h - 4);
 
             if (offscreen != null) {
                 g.drawImage(offscreen, 0, 0, this);
@@ -229,6 +237,8 @@ public class Kokotmetr extends JFrame implements KeyListener {
     private int state = STATE_IDLE;
     private long startTime = 0;
     private Timer timer;
+    private Random geigerRandom = new Random();
+    private boolean soundEnabled = true;
 
     public Kokotmetr() {
         setTitle("KOKOTMETR");
@@ -244,7 +254,7 @@ public class Kokotmetr extends JFrame implements KeyListener {
 
         progressBar = new ProgressBar();
 
-        final JButton modeBtn = new JButton("RADIUS");
+        final JButton modeBtn = new JButton("LINKA");
         modeBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (progressBar.getMode() == 0) {
@@ -254,15 +264,23 @@ public class Kokotmetr extends JFrame implements KeyListener {
                     progressBar.setMode(0);
                     modeBtn.setText("RADIUS");
                 }
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() { Kokotmetr.this.requestFocus(); }
-                });
+                progressBar.requestFocus();
+            }
+        });
+
+        final JButton soundBtn = new JButton("MUTE");
+        soundBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                soundEnabled = !soundEnabled;
+                soundBtn.setText(soundEnabled ? "MUTE" : "UNMUTE");
+                progressBar.requestFocus();
             }
         });
 
         JPanel northPanel = new JPanel(new BorderLayout());
         northPanel.add(label, BorderLayout.CENTER);
         northPanel.add(modeBtn, BorderLayout.EAST);
+        northPanel.add(soundBtn, BorderLayout.WEST);
 
         getContentPane().add(northPanel, BorderLayout.NORTH);
         getContentPane().add(progressBar, BorderLayout.CENTER);
@@ -270,6 +288,7 @@ public class Kokotmetr extends JFrame implements KeyListener {
         addKeyListener(this);
         progressBar.addKeyListener(this);
         modeBtn.addKeyListener(this);
+        soundBtn.addKeyListener(this);
         progressBar.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 Kokotmetr.this.requestFocus();
@@ -291,6 +310,10 @@ public class Kokotmetr extends JFrame implements KeyListener {
                     int value = (int)(duration * 100 / 10000); // 10s = plny bar
                     if (value > 100) value = 100;
                     progressBar.setValue(value, duration);
+                    double prob = 0.05 + (value / 100.0) * 0.85;
+                    if (soundEnabled && geigerRandom.nextDouble() < prob) {
+                        Toolkit.getDefaultToolkit().beep();
+                    }
                 }
             }
         });
@@ -306,6 +329,10 @@ public class Kokotmetr extends JFrame implements KeyListener {
             } else {
                 progressBar.setMode(ProgressBar.MODE_LINKA);
             }
+            return;
+        }
+        if (k == KeyEvent.VK_3) {
+            soundEnabled = !soundEnabled;
             return;
         }
         if (k == KeyEvent.VK_2 || k == KeyEvent.VK_UP || k == KeyEvent.VK_DOWN) {
