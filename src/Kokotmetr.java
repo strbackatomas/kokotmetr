@@ -239,6 +239,7 @@ public class Kokotmetr extends JFrame implements KeyListener {
     private Timer timer;
     private Random geigerRandom = new Random();
     private boolean soundEnabled = true;
+    private GeigerSound geigerSound = new GeigerSound();
 
     public Kokotmetr() {
         setTitle("KOKOTMETR");
@@ -312,7 +313,11 @@ public class Kokotmetr extends JFrame implements KeyListener {
                     progressBar.setValue(value, duration);
                     double prob = 0.05 + (value / 100.0) * 0.85;
                     if (soundEnabled && geigerRandom.nextDouble() < prob) {
-                        Toolkit.getDefaultToolkit().beep();
+                        if (geigerSound.isAvailable()) {
+                            geigerSound.playClick();
+                        } else {
+                            Toolkit.getDefaultToolkit().beep();
+                        }
                     }
                 }
             }
