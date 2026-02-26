@@ -1,5 +1,7 @@
 # Kokotmetr
 
+> Reaction time meter with Czech insult-based scoring. Java app for CrEme J2ME / Windows CE.
+
 Humorná Java aplikace pro měření reakčního času s patřičným hodnocením výsledku.
 Navržena pro běh na CrEme J2ME (Windows CE, Personal Profile).
 
